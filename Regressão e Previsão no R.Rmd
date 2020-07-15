@@ -1,0 +1,170 @@
+---
+title: "Regressão Linear e Previsão com R"
+author: "Agda Costa"
+date: "13/07/2020"
+output:
+  html_document:
+    theme: readable
+    highlight: espresso
+---
+
+## Etapas
+
+ 1. Importação dos dados
+ 2. Gráfico de Dispersão Area x Preço
+ 3. Cálculo da correlação Area x Preço
+ 4. Ánálise Exploratória Tempo x Preço
+ 5. Cálculo da correlação Tempo x Preço
+ 6. Análise dos dados
+ 7. Descobrindo os valores maior que certo quantil
+ 8. Ajuste do Modelo de Regressão: Área x Preço
+ 9. Preço estimado de um casa com 70m²
+ 10. Gráfico de dispersão com o modelo de regressão linear
+ 11. Verificando se o modelo é mesmo relevante
+ 12. Comprovando o modelo de Regressão: Área x Preço
+ 13. Replicando as etapas para o modelo Tempo x Preço 
+ 
+
+**1. Importação dos dados**
+
+```{r dados }
+library(readxl)
+dados <- read_excel("~/Regressão/dados.xlsx", 
+                    col_types = c("numeric", "numeric", "numeric"))
+head(dados)
+```
+
+**2. Gráfico de Dispersão Area x Preço**
+
+R. A primeira impressão é: quanto maior a área, maior o preço.
+```{r}
+plot(dados$area, dados$preco,
+     ylab = "Preço (R$)", 
+     xlab = "Área", 
+     main = "Gráfico de Dispersão",
+     pch = 19)
+```
+
+**3. Cálculo da correlação Area x Preço**
+
+R. Quando o coeficiente de relação é próximo de 1, entende-se que há uma relação linear forte positiva, que é quando uma váriavel aumenta, a outra também aumenta.
+
+```{r }
+cor(dados$area, dados$preco)
+```
+
+R. Como p-valor < 0.05 rejeito a hipotese de que a correlação é zero, então a relação entre área e preço existe, é positiva e estatísticamente significativa.
+
+```{r}
+cor.test(dados$area, dados$preco)
+```
+
+**4. Ánálise Exploratória Tempo x Preço**
+
+R. A primeira impressão é: quanto maior o tempo, menor o preço.
+```{r}
+plot(dados$tempo, dados$preco,
+     ylab = "Preço (R$)", 
+     xlab = "Tempo", 
+     main = "Gráfico de Dispersão",
+     pch = 19)
+```
+
+**5. Cálculo da correlação Tempo x Preço**
+
+R. Quando coeficiente de relação é próximo de -1, entende-se há uma relação linear forte negativa, que é quando uma váriavel aumenta, a outra diminui.
+Pelo p-valor < 0.05 rejeitamos a hipótese de que a correlação é zero, então podemos concluir que a relação existe, é negativa e estatísticamente significativa.
+
+```{r}
+cor.test(dados$tempo,dados$preco)
+```
+
+**6. Análise dos dados**
+
+R.Utilizamos o boxplot para visualizar a distribuição dos dados.
+
+Observando o gráfico parece que o preço tem uma distribuição simétrica em torno da mediana.E existe outliers. Analisando melhor as medidas pela função summary, diz que 50% das observações tem um preço variando 979 mil á 1.225 mi.
+
+Usamos a função car para identificar os outliers dentro do boxplot.
+```{r}
+boxplot(dados$preco, main = "Boxplot Preço")
+summary(dados$preco)
+library(car)
+
+```
+
+**7.Descobrindo os valores maior que certo quantil**
+
+R. Neste caso, vamos descobrir quais os indices das casas com os preços maiores que o terceiro quantil 
+```{r}
+which(dados$preco > quantile(dados$preco, 0.75) )
+```
+
+**8. Ajuste do Modelo de Regressão: Área x Preço**
+
+R. Modelo de regressão linear simples da váriavel Preço em função da area. Isto é
+preço = bo + b1*area
+```{r}
+mod = lm(dados$preco~dados$area)
+mod
+```
+
+**9. Preço estimado de um casa com 70m² **
+
+R. Usando os coeficientes gerados pelo função Lm(), temos que o preço estimado para uma casa com 70m² seja de R$1.051.951 Milhões
+```{r}
+preço = mod$coefficients[1] + mod$coefficients[2]*70
+preço
+```
+
+**10. Gráfico de dispersão com o modelo de regressão linear**
+
+```{r}
+plot(dados$area, dados$preco, pch = 19,
+     ylab = "Preço (R$)", xlab = "Área", main = "Gráfico de Dispersão x Modelo de Regressão") 
+abline(mod, col = "red")
+```
+
+**11. Verificando se o modelo é mesmo relevante **
+
+R. Já sabemos que a área realmente influi no preço das casas, mas será que é melhor eu considerar mesmo o estimador do preço x area ao invés de simplesmente trabalhar com a média?
+
+Para testar, usamos a função summary no modelo criado, e pelo teste F apresentado na última linha, vemos que o modelo é bom comparado com a média e para nos dizer se os coeficientes estimados é diferente de zero, observamos as informações de 'Coefficients',e no caso, rejeitamos a hipótese de que são iguais a zeros, vistos que os p-valor < 0.05. 
+```{r}
+summary(mod)
+```
+
+**12. Comprovando o modelo de Regressão: Área x Preço**
+
+R. Ainda usando a função summary em cima do modelo, analisamos o R² e o R² ajustado a amostra. Então com esse modelo eu consigo explicar 94% de variabilidade dos meus dados
+```{r}
+summary(mod)$r.squared
+```
+
+**13. Replicando as etapas para o modelo Tempo x Preço **
+
+R. A gente faz o teste T, para avaliar a importância da variável tempo no modelo e a hipótese que a gente tem é que ela não é importante, que o efeito dela no preço é zero, é nulo. Como a gente faz o teste T e obtém um p-valor menor do que 0,05. Nós concluímos que a variável do tempo, ela é estatisticamente significativa para estimar o preço das casas.
+
+Além disso, da estatística F, temos um p-valor que é menor do que 0,05, concluímos que o modelo que tem o tempo das casas, é melhor do que considerar simplesmente a média do preço das casas e nesse caso, temos um coeficiente de determinação de 0,79.
+
+Nesse caso, ele foi um pouquinho menor do que a gente tinha comparado anteriormente, com o modelo que tinha a área das casas, ou seja, com esse modelo do preço em função do tempo, eu só consigo explicar 77%, aproximadamente de variabilidade dos meus dados.
+
+Então, esse modelo, ele não é muito bom como que a gente quer, e se eu for comparar ele, por exemplo, com o modelo que só tem a área das casas, ele é pior do que aquele outro modelo, por quê? Porque o coeficiente de determinação dele é menor do que o outro.
+```{r}
+mod2 = lm(dados$preco~dados$tempo)
+summary(mod2)
+```
+
+**14.**
+
+R.
+```{r}
+
+```
+
+**15.**
+
+R.
+```{r}
+
+```
