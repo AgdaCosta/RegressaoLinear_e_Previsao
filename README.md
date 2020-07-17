@@ -1,7 +1,8 @@
 # RegressaoLinear_e_Previsao
 Regressão Linear e previsão sobre o preço de imóveis usando o Rstudio.
 
-## Etapas
+ Etapas
+___________________________________________________________________________________________
  1. Importação dos dados
  2. Gráfico de Dispersão Area x Preço
  3. Cálculo da correlação Area x Preço
