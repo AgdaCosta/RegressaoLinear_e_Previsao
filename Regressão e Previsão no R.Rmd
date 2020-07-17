@@ -8,7 +8,7 @@ output:
     highlight: espresso
 ---
 
-## Etapas
+##-------------------Etapas-------------------------------------------------
 
  1. Importação dos dados
  2. Gráfico de Dispersão Area x Preço
