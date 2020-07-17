@@ -23,13 +23,18 @@ output:
  11. Verificando se o modelo é mesmo relevante
  12. Comprovando o modelo de Regressão: Área x Preço
  13. Replicando as etapas para o modelo Tempo x Preço 
+ 14. Suposições
+ 15. Teste do Durbin Watson
+ 16. Teste de Breusch Pagan
+ 17. Teste de Shapiro Wilks
+ 18. Conclusão
  
 
 **1. Importação dos dados**
 
 ```{r dados }
 library(readxl)
-dados <- read_excel("~/Regressão/dados.xlsx", 
+dados <- read_excel("~/RegressaoLinear_e_Previsao/dados.xlsx", 
                     col_types = c("numeric", "numeric", "numeric"))
 head(dados)
 ```
@@ -121,7 +126,9 @@ preço
 
 ```{r}
 plot(dados$area, dados$preco, pch = 19,
-     ylab = "Preço (R$)", xlab = "Área", main = "Gráfico de Dispersão x Modelo de Regressão") 
+     ylab = "Preço (R$)",
+     xlab = "Área", 
+     main = "Gráfico de Dispersão x Modelo de Regressão") 
 abline(mod, col = "red")
 ```
 
@@ -155,16 +162,64 @@ mod2 = lm(dados$preco~dados$tempo)
 summary(mod2)
 ```
 
-**14.**
+**14. Suposições**
 
-R.
+R. Toda a análise realizada até agora, pelo modelo linear simples foi baseado em algumas suposições sobre o modelo, algumas delas são independencia, homocedasticidade e tem que ter normalidade. Podemos visualizar as suposições por meio de gráficos e fazendo testes para comprovar.
+
+Primeiro vamos plotar os residuos de todas as minhas 100 observações do meu modelo. E gráficamente percebemos que eles não seguem um padrão, ou seja, não tem nenhuma tendência, e é isso que a gente espera. Podemos também identificar, pela função identify, os Index das casas com os piores residuos, isto que, que tiveram uma diferença maior do valor estimado. 
 ```{r}
+plot(mod$residuals,
+    ylab = "Residuos",
+     xlab = "Index dos Imovéis", 
+     main = "Suposição de independência",
+    pch = 19)
+
+identify(mod$residuals, n=2)
+```
+
+**15.  Teste do Durbin Watson**
+
+R. Agora nós vamos fazer o teste do Durbin Watson para o modelo do preço, em função da casa. Ele faz uma estatística que teste precisamente, se eles são independentes. Aí, o p-valor que a gente compara é com 0.05, nesse caso, o p-valor não foi menor do que 0.05. Logo, a gente não tem evidência suficiente para rejeitar a hipótese nula.
+
+Se eu não consigo rejeitar é porque eu não tenho evidências para dizer que elas não são independentes.
+Então, eu aceito que são independentes. 
+```{r}
+library(lmtest)
+dwtest(mod)
 
 ```
 
-**15.**
 
-R.
+**16. Teste de Breusch Pagan **
+
+R.  A outra suposição que o modelo linear simples faz é que os erros são homocedásticos, ou seja, que as variâncias deles são iguais. Para isso, nós podemos utilizar, por exemplo, o gráfico dos valores ajustados contra os resíduos.
+Pelo gráfico não há alguma relação entre eles e os valores ajustados, mas novamente, isso é uma forma de verificar de forma visual, a gente precisa realizar um teste, só para confirmar.
+
+Minha Hipótese nula é que eles tem a mesma variância.Nesse caso o p-valor não foi menor do que 0.05, então eu não tenho evidências para rejeitar a hipótese de que os erros são homocedásticos , portanto tudo ok com essa suposição do modelo, eles são homocedásticos , pelo menos não tenho evidências para dizer o contrário.
 ```{r}
-
+plot(mod$fitted.values, mod$residuals, 
+     xlab = "Valores Ajustados",
+     ylab = "Residuos",
+     pch = 19,
+     main = "Suposição de homocedasticidade"
+     )
+library(lmtest)
+bptest(mod)
 ```
+
+**17. Teste de Shapiro Wilks **
+
+R. O teste que nós podemos utilizar para verificar a normalidade dos dados é o teste de Shapiro Wilks. A hipótese nula é que os dados tem distribuição normal. Então eu quero testar que os erros, em particular o resíduo, que é a estimativa do erro, tem distribuição normal com média zero.
+
+como o p-valor do que 0.05, eu não tenho evidência para rejeitar que os erros provêm de uma distribuição normal.Então, eu aceito que eles têm distribuição normal por enquanto, porque eu não tenho evidência para dizer o contrário.
+```{r}
+shapiro.test(mod$residuals)
+```
+
+**18. Conclusão**
+
+A gente testou todas as suposições básicas do modelo de regressão linear simples e até aqui, nós já temos um modelo corretamente estimado e já permite obter estimativas, previsões futuras para novas casas, e determinar qual seria o preço delas.   
+
+
+
+
