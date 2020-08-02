@@ -4,11 +4,19 @@ author: "Agda Costa"
 date: "13/07/2020"
 output:
   html_document:
-    theme: readable
+    toc: true # table of content true
+    theme: readable  # many options for theme, this one is my favorite.
     highlight: espresso
+    toc_float:
+      collapsed: false
+      smooth_scroll: false 
+    
+  
+    
 ---
 
-##-------------------Etapas-------------------------------------------------
+##  Tópicos
+ -------------------Etapas-------------------------------------------------
 
  1. Importação dos dados
  2. Gráfico de Dispersão Area x Preço
@@ -30,7 +38,7 @@ output:
  18. Conclusão
  
 
-**1. Importação dos dados**
+## **1. Importação dos dados**
 
 ```{r dados }
 library(readxl)
@@ -39,7 +47,7 @@ dados <- read_excel("~/RegressaoLinear_e_Previsao/dados.xlsx",
 head(dados)
 ```
 
-**2. Gráfico de Dispersão Area x Preço**
+## **2. Gráfico de Dispersão Area x Preço**
 
 R. A primeira impressão é: quanto maior a área, maior o preço.
 ```{r}
@@ -50,7 +58,7 @@ plot(dados$area, dados$preco,
      pch = 19)
 ```
 
-**3. Cálculo da correlação Area x Preço**
+## **3. Cálculo da correlação Area x Preço**
 
 R. Quando o coeficiente de relação é próximo de 1, entende-se que há uma relação linear forte positiva, que é quando uma váriavel aumenta, a outra também aumenta.
 
@@ -64,7 +72,7 @@ R. Como p-valor < 0.05 rejeito a hipotese de que a correlação é zero, então 
 cor.test(dados$area, dados$preco)
 ```
 
-**4. Ánálise Exploratória Tempo x Preço**
+## **4. Ánálise Exploratória Tempo x Preço**
 
 R. A primeira impressão é: quanto maior o tempo, menor o preço.
 ```{r}
@@ -75,7 +83,7 @@ plot(dados$tempo, dados$preco,
      pch = 19)
 ```
 
-**5. Cálculo da correlação Tempo x Preço**
+## **5. Cálculo da correlação Tempo x Preço**
 
 R. Quando coeficiente de relação é próximo de -1, entende-se há uma relação linear forte negativa, que é quando uma váriavel aumenta, a outra diminui.
 Pelo p-valor < 0.05 rejeitamos a hipótese de que a correlação é zero, então podemos concluir que a relação existe, é negativa e estatísticamente significativa.
@@ -84,7 +92,7 @@ Pelo p-valor < 0.05 rejeitamos a hipótese de que a correlação é zero, então
 cor.test(dados$tempo,dados$preco)
 ```
 
-**6. Análise dos dados**
+## **6. Análise dos dados**
 
 R.Utilizamos o boxplot para visualizar a distribuição dos dados.
 
@@ -98,14 +106,14 @@ library(car)
 
 ```
 
-**7.Descobrindo os valores maior que certo quantil**
+## **7.Descobrindo os valores maior que certo quantil**
 
 R. Neste caso, vamos descobrir quais os indices das casas com os preços maiores que o terceiro quantil 
 ```{r}
 which(dados$preco > quantile(dados$preco, 0.75) )
 ```
 
-**8. Ajuste do Modelo de Regressão: Área x Preço**
+## **8. Ajuste do Modelo de Regressão: Área x Preço**
 
 R. Modelo de regressão linear simples da váriavel Preço em função da area. Isto é
 preço = bo + b1*area
@@ -114,7 +122,7 @@ mod = lm(dados$preco~dados$area)
 mod
 ```
 
-**9. Preço estimado de um casa com 70m² **
+## **9. Preço estimado de um casa com 70m² **
 
 R. Usando os coeficientes gerados pelo função Lm(), temos que o preço estimado para uma casa com 70m² seja de R$1.051.951 Milhões
 ```{r}
@@ -122,7 +130,7 @@ preço = mod$coefficients[1] + mod$coefficients[2]*70
 preço
 ```
 
-**10. Gráfico de dispersão com o modelo de regressão linear**
+## **10. Gráfico de dispersão com o modelo de regressão linear**
 
 ```{r}
 plot(dados$area, dados$preco, pch = 19,
@@ -132,7 +140,7 @@ plot(dados$area, dados$preco, pch = 19,
 abline(mod, col = "red")
 ```
 
-**11. Verificando se o modelo é mesmo relevante **
+## **11. Verificando se o modelo é mesmo relevante **
 
 R. Já sabemos que a área realmente influi no preço das casas, mas será que é melhor eu considerar mesmo o estimador do preço x area ao invés de simplesmente trabalhar com a média?
 
@@ -141,14 +149,14 @@ Para testar, usamos a função summary no modelo criado, e pelo teste F apresent
 summary(mod)
 ```
 
-**12. Comprovando o modelo de Regressão: Área x Preço**
+## **12. Comprovando o modelo de Regressão: Área x Preço**
 
 R. Ainda usando a função summary em cima do modelo, analisamos o R² e o R² ajustado a amostra. Então com esse modelo eu consigo explicar 94% de variabilidade dos meus dados
 ```{r}
 summary(mod)$r.squared
 ```
 
-**13. Replicando as etapas para o modelo Tempo x Preço **
+## **13. Replicando as etapas para o modelo Tempo x Preço **
 
 R. A gente faz o teste T, para avaliar a importância da variável tempo no modelo e a hipótese que a gente tem é que ela não é importante, que o efeito dela no preço é zero, é nulo. Como a gente faz o teste T e obtém um p-valor menor do que 0,05. Nós concluímos que a variável do tempo, ela é estatisticamente significativa para estimar o preço das casas.
 
@@ -162,7 +170,7 @@ mod2 = lm(dados$preco~dados$tempo)
 summary(mod2)
 ```
 
-**14. Suposições**
+## **14. Suposições**
 
 R. Toda a análise realizada até agora, pelo modelo linear simples foi baseado em algumas suposições sobre o modelo, algumas delas são independencia, homocedasticidade e tem que ter normalidade. Podemos visualizar as suposições por meio de gráficos e fazendo testes para comprovar.
 
@@ -177,20 +185,20 @@ plot(mod$residuals,
 identify(mod$residuals, n=2)
 ```
 
-**15.  Teste do Durbin Watson**
+## **15.  Teste do Durbin Watson**
 
 R. Agora nós vamos fazer o teste do Durbin Watson para o modelo do preço, em função da casa. Ele faz uma estatística que teste precisamente, se eles são independentes. Aí, o p-valor que a gente compara é com 0.05, nesse caso, o p-valor não foi menor do que 0.05. Logo, a gente não tem evidência suficiente para rejeitar a hipótese nula.
 
 Se eu não consigo rejeitar é porque eu não tenho evidências para dizer que elas não são independentes.
 Então, eu aceito que são independentes. 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(lmtest)
 dwtest(mod)
 
 ```
 
 
-**16. Teste de Breusch Pagan **
+## **16. Teste de Breusch Pagan **
 
 R.  A outra suposição que o modelo linear simples faz é que os erros são homocedásticos, ou seja, que as variâncias deles são iguais. Para isso, nós podemos utilizar, por exemplo, o gráfico dos valores ajustados contra os resíduos.
 Pelo gráfico não há alguma relação entre eles e os valores ajustados, mas novamente, isso é uma forma de verificar de forma visual, a gente precisa realizar um teste, só para confirmar.
@@ -207,7 +215,7 @@ library(lmtest)
 bptest(mod)
 ```
 
-**17. Teste de Shapiro Wilks **
+## **17. Teste de Shapiro Wilks **
 
 R. O teste que nós podemos utilizar para verificar a normalidade dos dados é o teste de Shapiro Wilks. A hipótese nula é que os dados tem distribuição normal. Então eu quero testar que os erros, em particular o resíduo, que é a estimativa do erro, tem distribuição normal com média zero.
 
@@ -216,7 +224,7 @@ como o p-valor do que 0.05, eu não tenho evidência para rejeitar que os erros 
 shapiro.test(mod$residuals)
 ```
 
-**18. Conclusão**
+## **18. Conclusão**
 
 A gente testou todas as suposições básicas do modelo de regressão linear simples e até aqui, nós já temos um modelo corretamente estimado e já permite obter estimativas, previsões futuras para novas casas, e determinar qual seria o preço delas.   
 
