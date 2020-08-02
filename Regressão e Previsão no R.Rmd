@@ -4,15 +4,8 @@ author: "Agda Costa"
 date: "13/07/2020"
 output:
   html_document:
-    toc: true # table of content true
     theme: readable  # many options for theme, this one is my favorite.
     highlight: espresso
-    toc_float:
-      collapsed: false
-      smooth_scroll: false 
-    
-  
-    
 ---
 
 ##  Tópicos
